@@ -1,0 +1,54 @@
+# directories:
+# - /compile/doc/amazon-mt - the files in this dir
+# - /compile/source/linux-amazon-mt - the kernel sources checked out from gitrepo
+# - /compile/result/amazon-mt - the resulting kernel, modules etc. tar.gz files
+# name: amz-f27
+
+# IMPORTANT: all this is still wip and does not work properly yet!
+# INFO: based on kernel source tree commit: def3ccfb02e9715ad86a2e26c09ee216ba73b256
+#                              from branch: main
+# gcc-4.8 required (only available in ubuntu 18.04 and not 20.04): apt-get install gcc-4.8
+
+# patches:
+# adjust gcc version to 4.8 - with newer ones it will not compile or work
+patch -p1 < /compile/doc/amazon-mt/misc.f27/patches/adjust-gcc-version.patch
+# this would only be required for the ggow kernel
+#patch -p1 < /compile/doc/amazon-mt/misc.f27/patches/perf-compile-fix.patch
+
+cp /compile/doc/amazon-mt/config.f27 /compile/source/linux-amazon-mt/.config
+cd /compile/source/linux-amazon-mt
+
+export ARCH=arm
+# a hand crafted config is used - so no defconfig here
+# make defconfig
+#/compile/doc/amazon-mt/misc.f27/options/enable-docker-options.sh
+#/compile/doc/amazon-mt/misc.f27/options/enable-additional-options.sh
+make olddefconfig
+make -j 4 zImage dtbs modules
+cd tools/perf
+export WERROR=0
+make
+cd ../power/cpupower
+chmod a+x ./utils/version-gen.sh
+make
+cd ../../..
+export kver=`make kernelrelease`
+echo ${kver}
+# remove debug info if there and wanted
+# find . -type f -name '*.ko' | sudo xargs -n 1 objcopy --strip-unneeded
+make modules_install
+mkdir -p /lib/modules/${kver}/tools
+cp -v tools/perf/perf /lib/modules/${kver}/tools
+cp -v tools/power/cpupower/cpupower /lib/modules/${kver}/tools
+cp -v tools/power/cpupower/libcpupower.so.0.0.0 /lib/modules/${kver}/tools/libcpupower.so.0
+# make headers_install INSTALL_HDR_PATH=/usr
+cp -v .config /boot/config-${kver}
+cp -v arch/arm/boot/zImage /boot/zImage-${kver}
+cp -v System.map /boot/System.map-${kver}
+cd /boot
+update-initramfs -c -k ${kver}
+tar cvzf /compile/source/linux-amazon-mt/${kver}.tar.gz /boot/*-${kver} /lib/modules/${kver}
+cp -v /compile/doc/amazon-mt/config.f27 /compile/doc/amazon-mt/config.f27.old
+cp -v /compile/source/linux-amazon-mt/.config /compile/doc/amazon-mt/config.f27
+cp -v /compile/source/linux-amazon-mt/.config /compile/doc/amazon-mt/config.f27-${kver}
+cp -v /compile/source/linux-amazon-mt/*.tar.gz /compile/result/amazon-mt

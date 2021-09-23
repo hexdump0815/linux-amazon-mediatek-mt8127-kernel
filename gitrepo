@@ -1,0 +1,7 @@
+mt8127 - branches: ford - ford-main, austin - austin-main:
+origin	https://github.com/hexdump0815/linux-amazon-mediatek-mt8127-kernel-source.git (fetch)
+origin	https://github.com/hexdump0815/linux-amazon-mediatek-mt8127-kernel-source.git (push)
+
+potential alternative kernels for mt8127:
+https://github.com/hexdump0815/android_amazon_austin_kernel
+https://github.com/hexdump0815/android_kernel_amazon_mt8127-common
