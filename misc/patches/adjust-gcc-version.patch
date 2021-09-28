@@ -1,8 +1,30 @@
 diff --git a/Makefile b/Makefile
-index 5438ce48..5cb50411 100644
+index 5438ce48..d19a95da 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -246,7 +246,7 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
+@@ -194,13 +194,14 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
+ # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
+ #ARCH		?= $(SUBARCH)
+ #CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+-ifeq ($(TARGET_ARCH), arm)
+-ARCH		?= arm
+-CROSS_COMPILE	?= arm-eabi-
+-else
+-ARCH		?= arm64
+-CROSS_COMPILE	?= aarch64-linux-android-
+-endif
++#ifeq ($(TARGET_ARCH), arm)
++#ARCH		?= arm
++#CROSS_COMPILE	?= arm-eabi-
++#else
++#ARCH		?= arm64
++#CROSS_COMPILE	?= aarch64-linux-android-
++#endif
++CROSS_COMPILE	:=
+ 
+ # Architecture as present in compile.h
+ UTS_MACHINE 	:= $(ARCH)
+@@ -246,7 +247,7 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
  	  else if [ -x /bin/bash ]; then echo /bin/bash; \
  	  else echo sh; fi ; fi)
  
@@ -11,7 +33,7 @@ index 5438ce48..5cb50411 100644
  HOSTCXX      = g++
  HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
  HOSTCXXFLAGS = -O2
-@@ -333,7 +333,7 @@ include $(srctree)/scripts/Kbuild.include
+@@ -333,7 +334,7 @@ include $(srctree)/scripts/Kbuild.include
  
  AS		= $(CROSS_COMPILE)as
  LD		= $(CROSS_COMPILE)ld

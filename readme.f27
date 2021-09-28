@@ -11,9 +11,10 @@
 
 # patches:
 # adjust gcc version to 4.8 - with newer ones it will not compile or work
-patch -p1 < /compile/doc/amazon-mt/misc.f27/patches/adjust-gcc-version.patch
+patch -p1 < /compile/doc/amazon-mt/misc/patches/adjust-gcc-version.patch
 # this would only be required for the ggow kernel
-#patch -p1 < /compile/doc/amazon-mt/misc.f27/patches/perf-compile-fix.patch
+#patch -p1 < /compile/doc/amazon-mt/misc/patches/perf-compile-fix.patch
+# all other patches are maintained in the tree
 
 cp /compile/doc/amazon-mt/config.f27 /compile/source/linux-amazon-mt/.config
 cd /compile/source/linux-amazon-mt
@@ -21,8 +22,9 @@ cd /compile/source/linux-amazon-mt
 export ARCH=arm
 # a hand crafted config is used - so no defconfig here
 # make defconfig
+# docker options end up in breaking the compile, so leave them off for now
 #/compile/doc/amazon-mt/misc.f27/options/enable-docker-options.sh
-#/compile/doc/amazon-mt/misc.f27/options/enable-additional-options.sh
+/compile/doc/amazon-mt/misc.f27/options/enable-additional-options.sh
 make olddefconfig
 make -j 4 zImage dtbs modules
 cd tools/perf
